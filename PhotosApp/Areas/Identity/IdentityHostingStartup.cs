@@ -1,5 +1,7 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -9,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using PhotosApp.Areas.Identity.Data;
 using PhotosApp.Services;
 using PhotosApp.Services.Authorization;
@@ -68,6 +71,27 @@ namespace PhotosApp.Areas.Identity
                     {
                         options.ClientId = context.Configuration["Authentication:Google:ClientId"];
                         options.ClientSecret = context.Configuration["Authentication:Google:ClientSecret"];
+                    })
+                    .AddJwtBearer(options =>
+                    {
+                        options.RequireHttpsMetadata = false;
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = false,
+                            ValidateAudience = false,
+                            ValidateLifetime = true,
+                            ClockSkew = TimeSpan.Zero,
+                            ValidateIssuerSigningKey = true,
+                            IssuerSigningKey = TemporaryTokens.SigningKey
+                        };
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnMessageReceived = c =>
+                            {
+                                c.Token = c.Request.Cookies[TemporaryTokens.CookieName];
+                                return Task.CompletedTask;
+                            }
+                        };
                     });
 
                 services.AddTransient<EntityTicketStore>();
@@ -86,6 +110,11 @@ namespace PhotosApp.Areas.Identity
 
                 services.AddAuthorization(options =>
                 {
+                    options.DefaultPolicy = new AuthorizationPolicyBuilder(
+                            JwtBearerDefaults.AuthenticationScheme,
+                            IdentityConstants.ApplicationScheme)
+                        .RequireAuthenticatedUser()
+                        .Build();
                     options.AddPolicy(
                         "Beta",
                         policyBuilder =>
@@ -106,6 +135,16 @@ namespace PhotosApp.Areas.Identity
                         {
                             policyBuilder.RequireAuthenticatedUser();
                             policyBuilder.AddRequirements(new MustOwnPhotoRequirement());
+                        });
+                    options.AddPolicy(
+                        "Dev",
+                        policyBuilder =>
+                        {
+                            policyBuilder.RequireAuthenticatedUser();
+                            policyBuilder.RequireRole("Dev");
+                            policyBuilder.AddAuthenticationSchemes(
+                                JwtBearerDefaults.AuthenticationScheme,
+                                IdentityConstants.ApplicationScheme);
                         });
                 });
 
