@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
@@ -46,6 +47,7 @@ namespace PhotosApp.Areas.Identity
                 
                 
                 services.AddScoped<IPasswordHasher<PhotosAppUser>, SimplePasswordHasher<PhotosAppUser>>();
+                services.AddScoped<IAuthorizationHandler, MustOwnPhotoHandler>();
                 
                 services.AddTransient<EntityTicketStore>();
                 services.ConfigureApplicationCookie(options =>
@@ -76,6 +78,13 @@ namespace PhotosApp.Areas.Identity
                         {
                             policyBuilder.RequireAuthenticatedUser();
                             policyBuilder.RequireClaim("subscription", "paid");
+                        });
+                    options.AddPolicy(
+                        "MustOwnPhoto",
+                        policyBuilder =>
+                        {
+                            policyBuilder.RequireAuthenticatedUser();
+                            policyBuilder.AddRequirements(new MustOwnPhotoRequirement());
                         });
                 });
 
