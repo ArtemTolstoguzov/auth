@@ -12,7 +12,7 @@
     <div>
         <div class="h5">@Model.Photo.Title</div>
         <div class="bottomMargin">
-            @if ((await authorizationService.AuthorizeAsync(User, "PolicyName")).Succeeded)
+            @if ((await authorizationService.AuthorizeAsync(User, "beta")).Succeeded)
             {
             <a asp-controller="Photos" asp-action="EditPhoto" asp-route-id="@Model.Photo.Id">Изменить подпись</a>
             <text>&nbsp;</text>
