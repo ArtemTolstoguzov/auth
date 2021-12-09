@@ -44,6 +44,14 @@ namespace PhotosService
             {
                 cfg.CreateMap<PhotoEntity, PhotoDto>().ReverseMap();
             }, new System.Reflection.Assembly[0]);
+            
+            services.AddAuthentication("Bearer")
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = "http://localhost:7000";
+                    options.Audience = "photos_service";
+                    options.RequireHttpsMetadata = false;
+                });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -58,6 +66,10 @@ namespace PhotosService
             app.UseSerilogRequestLogging();
 
             app.UseRouting();
+            
+            app.UseAuthentication();
+            app.UseAuthorization();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

@@ -13,6 +13,7 @@ using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using IdentityModel.Client;
 using MediaTypeHeaderValue = System.Net.Http.Headers.MediaTypeHeaderValue;
 
 namespace PhotosApp.Clients
@@ -199,9 +200,40 @@ namespace PhotosApp.Clients
 
         private async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request)
         {
-            var httpClient = new HttpClient();
+            var clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback += 
+                (sender, cert, chain, sslPolicyErrors) =>
+            {
+                return true;
+            };
+            
+            var accessToken = await GetAccessTokenByClientCredentialsAsync();
+            var httpClient = new HttpClient(clientHandler);
+            httpClient.SetBearerToken(accessToken);
             var response = await httpClient.SendAsync(request);
             return response;
+        }
+        
+        private static async Task<string> GetAccessTokenByClientCredentialsAsync()
+        {
+            var httpClient = new HttpClient();
+            
+            var disco = await httpClient.GetDiscoveryDocumentAsync("http://localhost:7000");
+            if (disco.IsError)
+                throw new Exception(disco.Error);
+            
+            var tokenResponse = await httpClient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+                ClientId = "Photos App by OAuth",
+                ClientSecret = "secret",
+                Scope = "photos"
+            });
+
+            if (tokenResponse.IsError)
+                throw new Exception(tokenResponse.Error);
+
+            return tokenResponse.AccessToken;
         }
     }
 }
