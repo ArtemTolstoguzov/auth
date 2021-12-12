@@ -64,6 +64,8 @@ namespace IdentityServer
 
                     AllowedGrantTypes = GrantTypes.Code,
                     
+                    AccessTokenLifetime = 2*60,
+                    
                     // NOTE: показывать ли пользователю страницу consent со списком запрошенных разрешений
                     RequireConsent = false,
 
