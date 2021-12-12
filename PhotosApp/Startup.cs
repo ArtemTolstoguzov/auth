@@ -50,8 +50,8 @@ namespace PhotosApp
             //services.AddDbContext<PhotosDbContext>(o =>
             //    o.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=PhotosApp;Trusted_Connection=True;"));
 
-            services.AddScoped<IPhotosRepository, LocalPhotosRepository>();
-            // services.AddScoped<IPhotosRepository, RemotePhotosRepository>();
+            // services.AddScoped<IPhotosRepository, LocalPhotosRepository>();
+            services.AddScoped<IPhotosRepository, RemotePhotosRepository>();
 
             services.AddAutoMapper(cfg =>
             {
@@ -79,6 +79,8 @@ namespace PhotosApp
 
                     // NOTE: oidc и profile уже добавлены по умолчанию
                     options.Scope.Add("email");
+                    options.Scope.Add("photos_app");
+                    options.Scope.Add("photos");
 
                     options.CallbackPath = "/signin-passport";
                     options.SignedOutCallbackPath = "/signout-callback-passport";
@@ -163,9 +165,7 @@ namespace PhotosApp
         public void Configure(IApplicationBuilder app)
         {
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
             else
                 app.UseExceptionHandler("/Exception");
 
