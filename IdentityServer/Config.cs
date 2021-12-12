@@ -84,6 +84,7 @@ namespace IdentityServer
                         IdentityServerConstants.StandardScopes.Profile,
                         // NOTE: Позволяет запрашивать email пользователя через id token
                         IdentityServerConstants.StandardScopes.Email,
+                        "photos"
                     },
 
                     // NOTE: Надо ли добавлять информацию о пользователе в id token при запросе одновременно
@@ -111,15 +112,13 @@ namespace IdentityServer
 
                     AllowedScopes = new List<string>
                     {
-                        
                         // NOTE: Позволяет запрашивать id token
                         IdentityServerConstants.StandardScopes.OpenId,
                         // NOTE: Позволяет запрашивать профиль пользователя через id token
                         IdentityServerConstants.StandardScopes.Profile,
                         // NOTE: Позволяет запрашивать email пользователя через id token
                         IdentityServerConstants.StandardScopes.Email,
-                        "photos_app",
-                        "photos"
+                        "photos_app"
                     },
 
                     // NOTE: Надо ли добавлять информацию о пользователе в id token при запросе одновременно
