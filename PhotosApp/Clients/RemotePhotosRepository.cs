@@ -218,7 +218,7 @@ namespace PhotosApp.Clients
         {
             var httpClient = new HttpClient();
             
-            var disco = await httpClient.GetDiscoveryDocumentAsync("http://localhost:7000");
+            var disco = await httpClient.GetDiscoveryDocumentAsync("https://localhost:7001");
             if (disco.IsError)
                 throw new Exception(disco.Error);
             

@@ -48,7 +48,7 @@ namespace PhotosService
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
                 {
-                    options.Authority = "http://localhost:7000";
+                    options.Authority = "https://localhost:7001";
                     options.Audience = "photos_service";
                     options.RequireHttpsMetadata = false;
                 });

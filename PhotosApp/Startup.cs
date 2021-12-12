@@ -71,7 +71,7 @@ namespace PhotosApp
                 {
                     options.SaveTokens = true;
                     options.RequireHttpsMetadata = false;
-                    options.Authority = "http://localhost:7000";
+                    options.Authority = "https://localhost:7001";
 
                     options.ClientId = "Photos App by OIDC";
                     options.ClientSecret = "secret";
@@ -163,7 +163,9 @@ namespace PhotosApp
         public void Configure(IApplicationBuilder app)
         {
             if (env.IsDevelopment())
+            {
                 app.UseDeveloperExceptionPage();
+            }
             else
                 app.UseExceptionHandler("/Exception");
 
