@@ -120,7 +120,8 @@ namespace IdentityServer
                         IdentityServerConstants.StandardScopes.Profile,
                         // NOTE: Позволяет запрашивать email пользователя через id token
                         IdentityServerConstants.StandardScopes.Email,
-                        "photos_app"
+                        "photos_app",
+                        "photos"
                     },
 
                     // NOTE: Надо ли добавлять информацию о пользователе в id token при запросе одновременно
